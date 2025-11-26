@@ -135,7 +135,8 @@ jobs:
           
           # Check for Windows exe files
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            for file in src-tauri/target/release/bundle/nsis/*.exe 2>/dev/null; do
+            shopt -s nullglob
+            for file in src-tauri/target/release/bundle/nsis/*.exe; do
               filename=$(basename "$file")
               if echo "$filename" | grep -qi "windows"; then
                 echo "❌ ERROR: Build file name format has changed!"
@@ -148,7 +149,8 @@ jobs:
           
           # Check for Linux deb files
           if [[ "${{ matrix.platform }}" == "ubuntu-24.04" ]]; then
-            for file in src-tauri/target/release/bundle/deb/*.deb 2>/dev/null; do
+            shopt -s nullglob
+            for file in src-tauri/target/release/bundle/deb/*.deb; do
               filename=$(basename "$file")
               if echo "$filename" | grep -qi "linux"; then
                 echo "❌ ERROR: Build file name format has changed!"
@@ -161,7 +163,8 @@ jobs:
           
           # Check for macOS dmg files
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            for file in src-tauri/target/*/release/bundle/dmg/*.dmg 2>/dev/null; do
+            shopt -s nullglob
+            for file in src-tauri/target/*/release/bundle/dmg/*.dmg; do
               filename=$(basename "$file")
               if echo "$filename" | grep -qi "darwin"; then
                 echo "❌ ERROR: Build file name format has changed!"
