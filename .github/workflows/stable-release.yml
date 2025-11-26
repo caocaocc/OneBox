@@ -125,3 +125,43 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: rm -f temp_auth_key.p8
         shell: bash
+
+
+      
+      - name: Verify Build Artifacts Naming
+        shell: bash
+        run: |
+          echo "Checking build artifacts naming conventions..."
+          
+          # Check for Windows exe files
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            if ls src-tauri/target/release/bundle/nsis/*.exe 2>/dev/null | grep -i "windows"; then
+              echo "❌ ERROR: Build file name format has changed!"
+              echo "Found .exe file containing 'windows' in the name:"
+              ls src-tauri/target/release/bundle/nsis/*.exe | grep -i "windows"
+              exit 1
+            fi
+            echo "✅ Windows exe naming check passed"
+          fi
+          
+          # Check for Linux deb files
+          if [[ "${{ matrix.platform }}" == "ubuntu-24.04" ]]; then
+            if ls src-tauri/target/release/bundle/deb/*.deb 2>/dev/null | grep -i "linux"; then
+              echo "❌ ERROR: Build file name format has changed!"
+              echo "Found .deb file containing 'linux' in the name:"
+              ls src-tauri/target/release/bundle/deb/*.deb | grep -i "linux"
+              exit 1
+            fi
+            echo "✅ Linux deb naming check passed"
+          fi
+          
+          # Check for macOS dmg files
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            if ls src-tauri/target/*/release/bundle/dmg/*.dmg 2>/dev/null | grep -i "darwin"; then
+              echo "❌ ERROR: Build file name format has changed!"
+              echo "Found .dmg file containing 'darwin' in the name:"
+              ls src-tauri/target/*/release/bundle/dmg/*.dmg | grep -i "darwin"
+              exit 1
+            fi
+            echo "✅ macOS dmg naming check passed"
+          fi
