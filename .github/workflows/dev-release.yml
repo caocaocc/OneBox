@@ -152,33 +152,39 @@ jobs:
           
           # Check for Windows exe files
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            if ls src-tauri/target/release/bundle/nsis/*.exe 2>/dev/null | grep -i "windows"; then
-              echo "❌ ERROR: Build file name format has changed!"
-              echo "Found .exe file containing 'windows' in the name:"
-              ls src-tauri/target/release/bundle/nsis/*.exe | grep -i "windows"
-              exit 1
-            fi
+            for file in src-tauri/target/release/bundle/nsis/*.exe 2>/dev/null; do
+              filename=$(basename "$file")
+              if echo "$filename" | grep -qi "windows"; then
+                echo "❌ ERROR: Build file name format has changed!"
+                echo "Found .exe file containing 'windows' in the name: $filename"
+                exit 1
+              fi
+            done
             echo "✅ Windows exe naming check passed"
           fi
           
           # Check for Linux deb files
           if [[ "${{ matrix.platform }}" == "ubuntu-24.04" ]]; then
-            if ls src-tauri/target/release/bundle/deb/*.deb 2>/dev/null | grep -i "linux"; then
-              echo "❌ ERROR: Build file name format has changed!"
-              echo "Found .deb file containing 'linux' in the name:"
-              ls src-tauri/target/release/bundle/deb/*.deb | grep -i "linux"
-              exit 1
-            fi
+            for file in src-tauri/target/release/bundle/deb/*.deb 2>/dev/null; do
+              filename=$(basename "$file")
+              if echo "$filename" | grep -qi "linux"; then
+                echo "❌ ERROR: Build file name format has changed!"
+                echo "Found .deb file containing 'linux' in the name: $filename"
+                exit 1
+              fi
+            done
             echo "✅ Linux deb naming check passed"
           fi
           
           # Check for macOS dmg files
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            if ls src-tauri/target/*/release/bundle/dmg/*.dmg 2>/dev/null | grep -i "darwin"; then
-              echo "❌ ERROR: Build file name format has changed!"
-              echo "Found .dmg file containing 'darwin' in the name:"
-              ls src-tauri/target/*/release/bundle/dmg/*.dmg | grep -i "darwin"
-              exit 1
-            fi
+            for file in src-tauri/target/*/release/bundle/dmg/*.dmg 2>/dev/null; do
+              filename=$(basename "$file")
+              if echo "$filename" | grep -qi "darwin"; then
+                echo "❌ ERROR: Build file name format has changed!"
+                echo "Found .dmg file containing 'darwin' in the name: $filename"
+                exit 1
+              fi
+            done
             echo "✅ macOS dmg naming check passed"
           fi
