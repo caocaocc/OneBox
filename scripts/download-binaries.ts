@@ -4,10 +4,10 @@ import { pipeline } from 'stream';
 import { x } from 'tar';
 import unzipper from 'unzipper';
 import { promisify } from 'util';
-import { SING_BOX_VERSION } from '../src/types/definition';
+import { SING_BOX_EXTENDED_VERSION, SING_BOX_VERSION } from '../src/types/definition';
 
 const BINARY_NAME = 'sing-box';
-const GITHUB_RELEASE_URL = 'https://github.com/SagerNet/sing-box/releases/download/';
+const GITHUB_RELEASE_URL = 'https://github.com/shtorm-7/sing-box-extended/releases/download/';
 
 // sysproxy download URL, only supports Windows x64 version.
 const SYSPROXY_URL = "https://github.com/clash-verge-rev/sysproxy/releases/download/x64/sysproxy.exe";
@@ -71,7 +71,9 @@ async function embeddingExternalBinaries(
 ): Promise<void> {
     const fileExtension = platform === 'windows' ? 'zip' : 'tar.gz';
     const fileName = `${BINARY_NAME}-${platform}-${arch}.${fileExtension}`;
-    const downloadUrl = `${GITHUB_RELEASE_URL}${SING_BOX_VERSION}/${BINARY_NAME}-${SING_BOX_VERSION.substring(1)}-${platform}-${arch}.${fileExtension}`;
+    const baseVersion = SING_BOX_VERSION.substring(1);
+    const extendedTag = `${SING_BOX_VERSION}-extended-${SING_BOX_EXTENDED_VERSION}`;
+    const downloadUrl = `${GITHUB_RELEASE_URL}${extendedTag}/${BINARY_NAME}-${baseVersion}-extended-${SING_BOX_EXTENDED_VERSION}-${platform}-${arch}.${fileExtension}`;
     const tmpDir = path.join(__dirname, 'tmp');
     const downloadPath = path.join(tmpDir, fileName);
 
@@ -85,7 +87,10 @@ async function embeddingExternalBinaries(
         await extractFile(downloadPath, fileExtension, tmpDir);
 
         // Move file to target location
-        const extractedFilePath = path.join(tmpDir, `${BINARY_NAME}-${SING_BOX_VERSION.substring(1)}-${platform}-${arch}/${BINARY_NAME}${extension}`);
+        const extractedFilePath = path.join(
+            tmpDir,
+            `${BINARY_NAME}-${baseVersion}-extended-${SING_BOX_EXTENDED_VERSION}-${platform}-${arch}/${BINARY_NAME}${extension}`
+        );
         const targetPath = `src-tauri/binaries/${BINARY_NAME}-${targetTriple}${extension}`;
 
         // Ensure target directory exists
