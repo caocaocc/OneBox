@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import { SING_BOX_VERSION } from '../src/types/definition';
 
 const BINARY_NAME = 'sing-box';
-const GITHUB_RELEASE_URL = 'https://github.com/SagerNet/sing-box/releases/download/';
+const GITHUB_RELEASE_URL = 'https://github.com/caocaocc/sing-box/releases/download/';
 
 // sysproxy download URL, only supports Windows x64 version.
 const SYSPROXY_URL = "https://github.com/clash-verge-rev/sysproxy/releases/download/x64/sysproxy.exe";

@@ -44,10 +44,9 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNERkM4MTE4RENFRUU4NDgKUldSSTZPN2NHSUg4UGFBOHU1UlFlMXE0eXh4b3hRaW1lb0FlYms1OWhxWnhJRURGN2FxcUZneEoK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4OEU5M0RDNUU2MzYzOEMKUldTTVkyTmUzSk9PT0RVR052eTdURkErOUgwQklLNmR0UW1aYUdacm5KcUhucDhhckcxUktwYVAK",
       "endpoints": [
-        "https://onebox-updater.oneoh.cloud/latest",
-        "https://github.com/OneOhCloud/OneBox/releases/latest/download/latest.json"
+        "https://github.com/caocaocc/OneBox/releases/latest/download/latest.json"
       ]
     },
     "sql": {

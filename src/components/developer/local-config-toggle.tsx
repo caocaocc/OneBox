@@ -13,7 +13,7 @@ export default function ToggleLocalConfig() {
     useEffect(() => {
         const loadState = async () => {
             try {
-                const state: boolean = await getStoreValue(SUPPORT_LOCAL_FILE_STORE_KEY, false);
+                const state: boolean = await getStoreValue(SUPPORT_LOCAL_FILE_STORE_KEY, true);
                 setToggle(state);
             } catch (error) {
                 console.warn("Error loading developer toggle state, defaulting to false.");

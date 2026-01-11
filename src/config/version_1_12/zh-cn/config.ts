@@ -268,7 +268,7 @@ const mixedRulesConfig = {
         {
             "tag": "auto",
             "type": "urltest",
-            "url": "https://www.google.com/generate_204",
+            "url": "http://connectivitycheck.gstatic.com/generate_204",
             "outbounds": []
         }
     ]
@@ -402,7 +402,7 @@ const miexdGlobalConfig = {
         {
             "tag": "auto",
             "type": "urltest",
-            "url": "https://www.google.com/generate_204",
+            "url": "http://connectivitycheck.gstatic.com/generate_204",
             "outbounds": []
         }
     ]
@@ -701,7 +701,7 @@ const TunRulesConfig = {
         {
             "tag": "auto",
             "type": "urltest",
-            "url": "https://www.google.com/generate_204",
+            "url": "http://connectivitycheck.gstatic.com/generate_204",
             "outbounds": []
         }
     ]
@@ -949,7 +949,7 @@ const TunGlobalConfig = {
         {
             "tag": "auto",
             "type": "urltest",
-            "url": "https://www.google.com/generate_204",
+            "url": "http://connectivitycheck.gstatic.com/generate_204",
             "outbounds": []
         }
     ]
