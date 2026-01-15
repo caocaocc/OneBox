@@ -205,7 +205,7 @@ export async function getConfigTemplateURLKey(mode: configType): Promise<string>
 
 // 读取模版配置源
 export async function getConfigTemplateURL(mode: configType): Promise<string> {
-    const remoteUrl = "https://jsdelivr.oneoh.cloud/gh/OneOhCloud/conf-template";
+    const remoteUrl = "https://cdn.jsdelivr.net/gh/caocaocc/conf-template";
     let defaultTemplatePath = '';
     let stageVersion: StageVersionType = await getStoreValue(STAGE_VERSION_STORE_KEY, "stable")
 
@@ -241,7 +241,7 @@ export async function setConfigTemplateURL(mode: configType, url: string) {
 }
 
 export async function getDefaultConfigTemplateURL(mode: configType): Promise<string> {
-    const remoteUrl = "https://jsdelivr.oneoh.cloud/gh/OneOhCloud/conf-template";
+    const remoteUrl = "https://cdn.jsdelivr.net/gh/caocaocc/conf-template";
     let stageVersion: StageVersionType = await getStoreValue(STAGE_VERSION_STORE_KEY)
     let versionNumber = SING_BOX_VERSION.replace('v', '').split('.')
     let major = versionNumber[0];

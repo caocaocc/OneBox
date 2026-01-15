@@ -220,7 +220,7 @@ pub async fn ping_google() -> bool {
         .unwrap();
 
     match client
-        .get("https://www.google.com/generate_204")
+        .get("http://connectivitycheck.gstatic.com/generate_204")
         .send()
         .await
     {

@@ -1,958 +1,460 @@
 import { configType } from "../../common"
 
 const mixedRulesConfig = {
-    "log": {
-        "disabled": false,
-        "level": "debug",
-        "timestamp": false
-    },
-    "dns": {
-        "servers": [
-            {
-                "tag": "system", // 🚫 禁止修改 tag 名称
-                "type": "udp",
-                "server": "119.29.29.29",
-                "server_port": 53,
-                "connect_timeout": "5s"
-            },
-            {
-                "tag": "dns_proxy", // 🚫 禁止修改 tag 名称
-                "type": "tcp",
-                "server": "1.0.0.1",
-                "server_port": 53,
-                "detour": "ExitGateway",
-                "connect_timeout": "5s"
-            }
-        ],
-        "rules": [
-            {
-                "query_type": [
-                    "HTTPS",
-                    "SVCB",
-                    "PTR"
-                ],
-                "action": "reject"
-            },
-            {
-                "rule_set": [
-                    "geosite-linkedin",
-                    "geosite-linkedin-cn"
-                ],
-                "server": "dns_proxy"
-            },
-            {
-                "domain_suffix": [
-                    ".oneoh.cloud",
-                    ".n2ray.dev",
-                    ".ksjhaoka.com",
-                    ".mixcapp.com",
-                    ".wiwide.net",
-                    "wiportal.wiwide.com",
-                    ".msftconnecttest.com",
-                    "nmcheck.gnome.org",
-                    "captive.apple.com",
-                    "detectportal.firefox.com",
-                    "connectivitycheck.android.com",
-                    "connectivitycheck.gstatic.com",
-                    "www.miwifi.com",
-                    "router.asus.com"
-                ],
-                "rule_set": [
-                    "geoip-cn",
-                    "geosite-cn",
-                    "geosite-apple",
-                    "geosite-microsoft-cn",
-                    "geosite-samsung",
-                    "geosite-private"
-                ],
-                "strategy": "prefer_ipv4",
-                "server": "system"
-            },
-            {
-                "rule_set": [
-                    "geoip-cn",
-                    "geosite-cn",
-                    "geosite-apple",
-                    "geosite-microsoft-cn",
-                    "geosite-samsung",
-                    "geosite-private"
-                ],
-                "invert": true,
-                "server": "dns_proxy"
-            }
-        ],
-        "strategy": "prefer_ipv4",
-        "final": "system" // 🚫 禁止修改
-    },
-    "inbounds": [
-        {
-            "tag": "mixed",
-            "type": "mixed",
-            "listen": "127.0.0.1",
-            "listen_port": 6789, // 🚫 禁止修改
-            "reuse_addr": true,
-            "tcp_fast_open": true,
-            "set_system_proxy": false // 🚫 禁止修改
-        }
+  "log":{"level":"debug","timestamp":true},
+  "dns":{
+    "servers":[
+      {"type":"udp","tag":"system","server":"180.184.1.1"},
+      {"type":"https","tag":"dns_proxy","detour":"ExitGateway","server":"1.1.1.1"},
+      {"type":"https","tag":"dns_direct","detour":"direct","server":"223.5.5.5"},
+      {"type":"local","tag":"local"}
     ],
-    "route": {
-        "rules": [
-            // 不可更改区域开始
-            {
-                "action": "sniff"
-            },
-            {
-                "type": "logical",
-                "mode": "or",
-                "rules": [
-                    {
-                        "protocol": "dns"
-                    },
-                    {
-                        "port": 53
-                    }
-                ],
-                "action": "hijack-dns"
-            },
-            {
-                "protocol": "quic",
-                "action": "reject"
-            },
-            {
-                "ip_is_private": true,
-                "outbound": "direct"
-            },
-            {
-                "domain": [
-                    "direct-tag.oneoh.cloud"
-                ],
-                "domain_suffix": [],
-                "ip_cidr": [],
-                "outbound": "direct"
-            },
-            {
-                "domain": [
-                    "proxy-tag.oneoh.cloud"
-                ],
-                "domain_suffix": [],
-                "ip_cidr": [],
-                "outbound": "ExitGateway"
-            },
-            // 不可更改区域结束
-            {
-                "rule_set": [
-                    "geosite-linkedin",
-                    "geosite-linkedin-cn"
-                ],
-                "outbound": "ExitGateway"
-            },
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "domain_suffix": [
-                    ".oneoh.cloud",
-                    ".n2ray.dev",
-                    ".ksjhaoka.com",
-                    ".mixcapp.com"
-                ],
-                "rule_set": [
-                    "geoip-cn",
-                    "geosite-cn",
-                    "geosite-apple",
-                    "geosite-microsoft-cn",
-                    "geosite-samsung",
-                    "geosite-private"
-                ],
-                "outbound": "direct"
-            }
-        ],
-        "final": "ExitGateway", // 🚫 禁止修改
-        "auto_detect_interface": true,
-        "rule_set": [
-            {
-                "tag": "geoip-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs"
-            },
-            {
-                "type": "remote",
-                "tag": "geosite-geolocation-cn",
-                "format": "source",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.json"
-            },
-            {
-                "tag": "geosite-linkedin",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-linkedin.srs"
-            },
-            {
-                "tag": "geosite-linkedin-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-linkedin@cn.srs"
-            },
-            {
-                "type": "remote",
-                "tag": "geosite-geolocation-!cn",
-                "format": "source",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.json"
-            },
-            {
-                "tag": "geosite-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/OneOhCloud/one-geosite@rules/geosite-one-cn.srs"
-            },
-            {
-                "tag": "geosite-apple",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-apple.srs"
-            },
-            {
-                "tag": "geosite-microsoft-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-microsoft@cn.srs"
-            },
-            {
-                "tag": "geosite-samsung",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-samsung.srs"
-            },
-            {
-                "tag": "geosite-telegram",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-telegram.srs"
-            },
-            {
-                "tag": "geosite-private",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-private.srs"
-            }
-        ]
-    },
-    "experimental": {
-        "clash_api": {}, // 此字段将被忽略
-        "cache_file": {} // 此字段将被忽略
-    },
-    // ------------------ Outbounds ------------------
-    // OneBox 会自动追加远程配置或者本地配置内容中的服务节点
-    // 到 outbounds 以及 ExitGateway["outbounds"] 和 auto["outbounds"] 中
-    // 如果需要添加自定义的出站，可以在此处添加，但请不要有重复的 tag 名称以及修改以下三个出站的 tag 名称
-    // 记住一个修改原则：只追加，不修改，不删除，不重复
-    "outbounds": [
-        {
-            "tag": "direct",
-            "type": "direct",
-            "domain_resolver": "system"
-        },
-        {
-            "tag": "ExitGateway",
-            "type": "selector",
-            "outbounds": [
-                "auto"
-            ],
-            "interrupt_exist_connections": true
-        },
-        {
-            "tag": "auto",
-            "type": "urltest",
-            "url": "https://www.google.com/generate_204",
-            "outbounds": []
-        }
-    ]
+    "rules":[
+      {"query_type":["HTTPS","SVCB","PTR"],"action":"reject"},
+      {"rule_set":"lan_non_ip","server":"local"},
+      {"rule_set":["reject_non_ip_drop","reject_non_ip_no_drop","reject_domainset","reject_extra_domainset","reject_non_ip","sogouinput"],"action":"reject"},
+      {"rule_set":["cdn_domainset","cdn_non_ip","ai_non_ip","apple_intelligence_non_ip","telegram_non_ip","apple_services","microsoft_non_ip","download_domainset","download_non_ip","global_non_ip"],"server":"dns_proxy"},
+      {"rule_set":["apple_cdn","apple_cn_non_ip","microsoft_cdn_non_ip","domestic_non_ip","direct_non_ip"],"server":"system"}
+    ],
+    "final":"system",
+    "independent_cache":true
+  },
+  "inbounds":[
+    {"type":"mixed","tag":"mixed","listen":"127.0.0.1","listen_port":6789,"reuse_addr":true,"set_system_proxy":false}
+  ],
+  "outbounds":[
+    {"type":"direct","tag":"direct","domain_resolver":"system"},
+    {"type":"selector","tag":"ExitGateway","outbounds":["auto"],"default":"auto","interrupt_exist_connections":true},
+    {"type":"urltest","tag":"auto","outbounds":[],"url":"http://www.gstatic.com/generate_204","interval":"10m0s","tolerance":50,"idle_timeout":"30m0s"},
+    {"type":"selector","tag":"AI","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true},
+    {"type":"selector","tag":"TV","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true}
+  ],
+  "route":{
+    "rules":[
+      {"action":"sniff","sniffer":["http","tls","quic","dns"],"timeout":"500ms"},
+      {"type":"logical","mode":"or","rules":[{"port":53},{"protocol":"dns"}],"action":"hijack-dns"},
+      {"rule_set":"reject_non_ip_drop","action":"reject"},
+      {"rule_set":"reject_non_ip_no_drop","action":"reject"},
+      {"rule_set":"reject_domainset","action":"reject"},
+      {"rule_set":"reject_extra_domainset","action":"reject"},
+      {"rule_set":"reject_non_ip","action":"reject"},
+      {"rule_set":"sogouinput","action":"reject"},
+      {"domain":["direct-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"direct"},
+      {"domain":["proxy-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"ExitGateway"},
+      {"rule_set":"speedtest","outbound":"direct"},
+      {"rule_set":"cdn_domainset","outbound":"ExitGateway"},
+      {"rule_set":"cdn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"stream_non_ip","outbound":"TV"},
+      {"rule_set":"ai_non_ip","outbound":"AI"},
+      {"rule_set":"apple_intelligence_non_ip","outbound":"AI"},
+      {"rule_set":"telegram_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"apple_cdn","outbound":"direct"},
+      {"rule_set":"apple_services","outbound":"ExitGateway"},
+      {"rule_set":"apple_cn_non_ip","outbound":"direct"},
+      {"rule_set":"microsoft_cdn_non_ip","outbound":"direct"},
+      {"rule_set":"microsoft_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_non_ip","outbound":"direct"},
+      {"rule_set":"download_domainset","outbound":"ExitGateway"},
+      {"rule_set":"download_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"lan_non_ip","outbound":"direct"},
+      {"rule_set":"domestic_non_ip","outbound":"direct"},
+      {"rule_set":"direct_non_ip","outbound":"direct"},
+      {"rule_set":"global_non_ip","outbound":"ExitGateway"},
+      {"action":"resolve"},
+      {"rule_set":"reject_ip","action":"reject"},
+      {"rule_set":"stream_ip","outbound":"TV"},
+      {"rule_set":"telegram_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_ip","outbound":"direct"},
+      {"rule_set":"lan_ip","outbound":"direct"},
+      {"rule_set":"domestic_ip","outbound":"direct"},
+      {"rule_set":"china_ip","outbound":"direct"}
+    ],
+    "rule_set":[
+      {"type":"remote","tag":"reject_non_ip_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip_no_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-no-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_extra_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject_extra.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"sogouinput","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/sogouinput.srs","download_detour":"auto"},
+      {"type":"remote","tag":"speedtest","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/speedtest.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"ai_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/ai.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_intelligence_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_intelligence.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cdn","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/apple_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_services","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_services.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_cn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"direct_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/direct.srs","download_detour":"auto"},
+      {"type":"remote","tag":"global_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/global.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"china_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/china_ip.srs","download_detour":"auto"}
+    ],
+    "final":"ExitGateway",
+    "auto_detect_interface":true,
+    "default_domain_resolver":"system"
+  },
+  "experimental":{
+    "cache_file":{},
+    "clash_api":{}
+  }
 }
 const miexdGlobalConfig = {
-    "log": {
-        "disabled": false,
-        "level": "debug",
-        "timestamp": false
-    },
-    "dns": {
-        "servers": [
-            {
-                "tag": "system", // 🚫 禁止修改 tag 名称
-                "type": "udp",
-                "server": "119.29.29.29",
-                "server_port": 53,
-                "connect_timeout": "5s"
-            },
-            {
-                "tag": "dns_proxy", // 🚫 禁止修改 tag 名称
-                "type": "tcp",
-                "server": "1.0.0.1",
-                "detour": "ExitGateway",
-                "connect_timeout": "5s"
-            }
-        ],
-        "rules": [
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "server": "system",
-                "strategy": "prefer_ipv4"
-            },
-            {
-                "query_type": [
-                    "HTTPS",
-                    "SVCB",
-                    "PTR"
-                ],
-                "action": "reject"
-            }
-        ],
-        "strategy": "prefer_ipv4",
-        "final": "dns_proxy" // 🚫 禁止修改 
-    },
-    "inbounds": [
-        {
-            "tag": "mixed", // 🚫 禁止修改 tag 名称
-            "type": "mixed",
-            "listen": "127.0.0.1",
-            "listen_port": 6789, // 🚫 禁止修改 
-            "reuse_addr": true,
-            "tcp_fast_open": true,
-            "set_system_proxy": false // 🚫 禁止修改 
-        }
+  "log":{"level":"debug","timestamp":true},
+  "dns":{
+    "servers":[
+      {"type":"udp","tag":"system","server":"180.184.1.1"},
+      {"type":"https","tag":"dns_proxy","detour":"ExitGateway","server":"1.1.1.1"},
+      {"type":"https","tag":"dns_direct","detour":"direct","server":"223.5.5.5"},
+      {"type":"local","tag":"local"}
     ],
-    "route": {
-        "rules": [
-            {
-                "action": "sniff"
-            },
-            {
-                "type": "logical",
-                "mode": "or",
-                "rules": [
-                    {
-                        "protocol": "dns"
-                    },
-                    {
-                        "port": 53
-                    }
-                ],
-                "action": "hijack-dns"
-            },
-            {
-                "protocol": "quic",
-                "action": "reject"
-            },
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "domain_suffix": [
-                    "local",
-                    "lan",
-                    "localdomain",
-                    "localhost",
-                    "bypass.local",
-                    "captive.apple.com"
-                ],
-                "ip_is_private": true,
-                "outbound": "direct"
-            }
-        ],
-        "final": "ExitGateway", // 🚫 禁止修改
-        "auto_detect_interface": true
-    },
-    "experimental": {
-        "clash_api": {}, // 此字段将被忽略
-        "cache_file": {} // 此字段将被忽略
-    },
-    // ------------------ Outbounds ------------------
-    // OneBox 会自动追加远程配置或者本地配置内容中的服务节点
-    // 到 outbounds 以及 ExitGateway["outbounds"] 和 auto["outbounds"] 中
-    // 如果需要添加自定义的出站，可以在此处添加，但请不要有重复的 tag 名称以及修改以下三个出站的 tag 名称
-    // 记住一个修改原则：只追加，不修改，不删除，不重复
-    "outbounds": [
-        {
-            "tag": "direct",
-            "type": "direct",
-            "domain_resolver": "system"
-        },
-        {
-            "tag": "ExitGateway",
-            "type": "selector",
-            "outbounds": [
-                "auto"
-            ],
-            "interrupt_exist_connections": true
-        },
-        {
-            "tag": "auto",
-            "type": "urltest",
-            "url": "https://www.google.com/generate_204",
-            "outbounds": []
-        }
-    ]
+    "rules":[
+      {"query_type":["HTTPS","SVCB","PTR"],"action":"reject"},
+      {"rule_set":"lan_non_ip","server":"local"},
+      {"rule_set":["reject_non_ip_drop","reject_non_ip_no_drop","reject_domainset","reject_extra_domainset","reject_non_ip","sogouinput"],"action":"reject"},
+      {"rule_set":["cdn_domainset","cdn_non_ip","ai_non_ip","apple_intelligence_non_ip","telegram_non_ip","apple_services","microsoft_non_ip","download_domainset","download_non_ip","global_non_ip"],"server":"dns_proxy"},
+      {"rule_set":["apple_cdn","apple_cn_non_ip","microsoft_cdn_non_ip","domestic_non_ip","direct_non_ip"],"server":"dns_proxy"}
+    ],
+    "final":"dns_proxy",
+    "independent_cache":true
+  },
+  "inbounds":[
+    {"type":"mixed","tag":"mixed","listen":"127.0.0.1","listen_port":6789,"reuse_addr":true,"set_system_proxy":false}
+  ],
+  "outbounds":[
+    {"type":"direct","tag":"direct","domain_resolver":"system"},
+    {"type":"selector","tag":"ExitGateway","outbounds":["auto"],"default":"auto","interrupt_exist_connections":true},
+    {"type":"urltest","tag":"auto","outbounds":[],"url":"http://www.gstatic.com/generate_204","interval":"10m0s","tolerance":50,"idle_timeout":"30m0s"},
+    {"type":"selector","tag":"AI","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true},
+    {"type":"selector","tag":"TV","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true}
+  ],
+  "route":{
+    "rules":[
+      {"action":"sniff","sniffer":["http","tls","quic","dns"],"timeout":"500ms"},
+      {"type":"logical","mode":"or","rules":[{"port":53},{"protocol":"dns"}],"action":"hijack-dns"},
+      {"rule_set":"reject_non_ip_drop","action":"reject"},
+      {"rule_set":"reject_non_ip_no_drop","action":"reject"},
+      {"rule_set":"reject_domainset","action":"reject"},
+      {"rule_set":"reject_extra_domainset","action":"reject"},
+      {"rule_set":"reject_non_ip","action":"reject"},
+      {"rule_set":"sogouinput","action":"reject"},
+      {"domain":["direct-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"ExitGateway"},
+      {"domain":["proxy-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"ExitGateway"},
+      {"rule_set":"speedtest","outbound":"ExitGateway"},
+      {"rule_set":"cdn_domainset","outbound":"ExitGateway"},
+      {"rule_set":"cdn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"stream_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"ai_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"apple_intelligence_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"telegram_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"apple_cdn","outbound":"ExitGateway"},
+      {"rule_set":"apple_services","outbound":"ExitGateway"},
+      {"rule_set":"apple_cn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"microsoft_cdn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"microsoft_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"download_domainset","outbound":"ExitGateway"},
+      {"rule_set":"download_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"lan_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"domestic_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"direct_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"global_non_ip","outbound":"ExitGateway"},
+      {"action":"resolve"},
+      {"rule_set":"reject_ip","action":"reject"},
+      {"rule_set":"stream_ip","outbound":"ExitGateway"},
+      {"rule_set":"telegram_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_ip","outbound":"ExitGateway"},
+      {"rule_set":"lan_ip","outbound":"direct"},
+      {"rule_set":"domestic_ip","outbound":"ExitGateway"},
+      {"rule_set":"china_ip","outbound":"ExitGateway"}
+    ],
+    "rule_set":[
+      {"type":"remote","tag":"reject_non_ip_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip_no_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-no-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_extra_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject_extra.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"sogouinput","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/sogouinput.srs","download_detour":"auto"},
+      {"type":"remote","tag":"speedtest","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/speedtest.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"ai_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/ai.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_intelligence_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_intelligence.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cdn","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/apple_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_services","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_services.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_cn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"direct_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/direct.srs","download_detour":"auto"},
+      {"type":"remote","tag":"global_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/global.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"china_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/china_ip.srs","download_detour":"auto"}
+    ],
+    "final":"ExitGateway",
+    "auto_detect_interface":true,
+    "default_domain_resolver":"dns_proxy"
+  },
+  "experimental":{
+    "cache_file":{},
+    "clash_api":{}
+  }
 }
 
 const TunRulesConfig = {
-    "log": {
-        "disabled": false,
-        "level": "debug",
-        "timestamp": false
-    },
-    "dns": {
-        "servers": [
-            {
-                "tag": "system", // 🚫 禁止修改 tag 名称
-                "type": "udp",
-                "server": "119.29.29.29",
-                "server_port": 53,
-                "connect_timeout": "5s"
-            },
-            {
-                "tag": "dns_proxy", // 🚫 禁止修改 tag 名称
-                "type": "tcp",
-                "server": "1.0.0.1",
-                "detour": "ExitGateway",
-                "connect_timeout": "5s"
-            },
-            {
-                "tag": "remote", // 🚫 禁止修改 tag 名称
-                "type": "fakeip",
-                "inet4_range": "198.18.0.0/15",
-                "inet6_range": "fc00::/18"
-            }
-        ],
-        "rules": [
-            {
-                "query_type": [
-                    "HTTPS",
-                    "SVCB",
-                    "PTR"
-                ],
-                "action": "reject"
-            },
-            {
-                "rule_set": [
-                    "geosite-linkedin",
-                    "geosite-linkedin-cn"
-                ],
-                "server": "remote"
-            },
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "rule_set": [
-                    "geoip-cn",
-                    "geosite-cn",
-                    "geosite-apple",
-                    "geosite-microsoft-cn",
-                    "geosite-samsung",
-                    "geosite-private"
-                ],
-                "strategy": "prefer_ipv4",
-                "server": "system"
-            },
-            {
-                "query_type": [
-                    "A",
-                    "AAAA",
-                    "CNAME"
-                ],
-                "server": "remote",
-                "strategy": "prefer_ipv4"
-            }
-        ],
-        "final": "dns_proxy",
-        "strategy": "prefer_ipv4"
-    },
-    "inbounds": [
-        {
-            "tag": "tun",
-            "type": "tun",
-            "address": [
-                "172.19.0.1/30",
-                "fdfe:dcba:9876::1/126"
-            ],
-            "platform": {
-                "http_proxy": {
-                    "enabled": true, // 🚫 禁止修改 
-                    "server": "127.0.0.1",
-                    "server_port": 6789 // 🚫 禁止修改 
-                }
-            },
-            "mtu": 9000,
-            "stack": "gvisor",
-            "auto_route": true,
-            "strict_route": true,
-            "sniff": true,
-            "sniff_override_destination": true,
-            "route_exclude_address": [
-                "10.0.0.0/8",
-                "100.64.0.0/10",
-                "127.0.0.0/8",
-                "169.254.0.0/16",
-                "172.16.0.0/12",
-                "192.0.0.0/24",
-                "192.168.0.0/16",
-                "224.0.0.0/4",
-                "240.0.0.0/4",
-                "255.255.255.255/32",
-                "fe80::/10",
-                "fc00::/7",
-                "ff01::/16",
-                "ff02::/16",
-                "ff03::/16",
-                "ff04::/16",
-                "ff05::/16",
-                "240e::/20"
-            ]
-        },
-        {
-            "tag": "mixed", // 🚫 禁止修改 tag 名称
-            "type": "mixed",
-            "listen": "127.0.0.1",
-            "listen_port": 6789, // 🚫 禁止修改
-            "reuse_addr": true,
-            "tcp_fast_open": true,
-            "set_system_proxy": false // 🚫 禁止修改
-        }
+  "log":{"level":"debug","timestamp":true},
+  "dns":{
+    "servers":[
+      {"type":"udp","tag":"system","server":"180.184.1.1"},
+      {"type":"https","tag":"dns_proxy","detour":"ExitGateway","server":"1.1.1.1"},
+      {"type":"https","tag":"dns_direct","detour":"direct","server":"223.5.5.5"},
+      {"type":"local","tag":"local"},
+      {"type":"fakeip","tag":"remote","inet4_range":"198.18.0.0/15","inet6_range":"fc00::/18"}
     ],
-    "route": {
-        "rules": [
-            // 不可更改区域开始
-            {
-                "inbound": "mixed",
-                "action": "sniff"
-            },
-            {
-                "protocol": "dns",
-                "action": "hijack-dns"
-            },
-            {
-                "protocol": "quic",
-                "action": "reject"
-            },
-            {
-                "domain": [
-                    "direct-tag.oneoh.cloud"
-                ],
-                "domain_suffix": [],
-                "ip_cidr": [],
-                "outbound": "direct"
-            },
-            {
-                "domain": [
-                    "proxy-tag.oneoh.cloud"
-                ],
-                "domain_suffix": [],
-                "ip_cidr": [],
-                "outbound": "ExitGateway"
-            },
-            // 不可更改区域结束
-            {
-                "rule_set": [
-                    "geosite-linkedin",
-                    "geosite-linkedin-cn"
-                ],
-                "outbound": "ExitGateway"
-            },
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "domain_suffix": [
-                    "local",
-                    "lan",
-                    "localdomain",
-                    "localhost",
-                    "bypass.local",
-                    "captive.apple.com"
-                ],
-                "rule_set": [
-                    "geoip-cn",
-                    "geosite-cn",
-                    "geosite-apple",
-                    "geosite-microsoft-cn",
-                    "geosite-samsung",
-                    "geosite-private"
-                ],
-                "ip_is_private": true,
-                "outbound": "direct"
-            }
-        ],
-        "final": "ExitGateway", // 🚫 禁止修改 
-        "rule_set": [
-            {
-                "tag": "geoip-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs"
-            },
-            {
-                "type": "remote",
-                "tag": "geosite-geolocation-cn",
-                "format": "source",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.json"
-            },
-            {
-                "tag": "geosite-linkedin",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-linkedin.srs"
-            },
-            {
-                "tag": "geosite-linkedin-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-linkedin@cn.srs"
-            },
-            {
-                "type": "remote",
-                "tag": "geosite-geolocation-!cn",
-                "format": "source",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.json"
-            },
-            {
-                "tag": "geosite-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/OneOhCloud/one-geosite@rules/geosite-one-cn.srs"
-            },
-            {
-                "tag": "geosite-apple",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-apple.srs"
-            },
-            {
-                "tag": "geosite-microsoft-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-microsoft@cn.srs"
-            },
-            {
-                "tag": "geosite-samsung",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-samsung.srs"
-            },
-            {
-                "tag": "geosite-telegram",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-telegram.srs"
-            },
-            {
-                "tag": "geosite-private",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-private.srs"
-            }
-        ],
-        "auto_detect_interface": true
-    },
-    "experimental": {
-        "clash_api": {}, // 此字段将被忽略
-        "cache_file": {} // 此字段将被忽略
-    },
-    // ------------------ Outbounds ------------------
-    // OneBox 会自动追加远程配置或者本地配置内容中的服务节点
-    // 到 outbounds 以及 ExitGateway["outbounds"] 和 auto["outbounds"] 中
-    // 如果需要添加自定义的出站，可以在此处添加，但请不要有重复的 tag 名称以及修改以下三个出站的 tag 名称
-    // 记住一个修改原则：只追加，不修改，不删除，不重复
-    "outbounds": [
-        {
-            "tag": "direct",
-            "type": "direct",
-            "domain_resolver": "system"
-        },
-        {
-            "tag": "ExitGateway",
-            "type": "selector",
-            "outbounds": [
-                "auto"
-            ],
-            "interrupt_exist_connections": true
-        },
-        {
-            "tag": "auto",
-            "type": "urltest",
-            "url": "https://www.google.com/generate_204",
-            "outbounds": []
-        }
-    ]
+    "rules":[
+      {"query_type":["HTTPS","SVCB","PTR"],"action":"reject"},
+      {"rule_set":"lan_non_ip","server":"local"},
+      {"query_type":["A","AAAA"],"server":"remote","rewrite_ttl":1},
+      {"rule_set":["reject_non_ip_drop","reject_non_ip_no_drop","reject_domainset","reject_extra_domainset","reject_non_ip","sogouinput"],"action":"reject"},
+      {"rule_set":["cdn_domainset","cdn_non_ip","ai_non_ip","apple_intelligence_non_ip","telegram_non_ip","apple_services","microsoft_non_ip","download_domainset","download_non_ip","global_non_ip"],"server":"dns_proxy"},
+      {"rule_set":["apple_cdn","apple_cn_non_ip","microsoft_cdn_non_ip","domestic_non_ip","direct_non_ip"],"server":"dns_direct"}
+    ],
+    "final":"system",
+    "independent_cache":true
+  },
+  "inbounds":[
+    {"type":"tun","tag":"tun","address":["172.19.0.1/30","fdfe:dcba:9876::1/126"],"auto_route":true,"strict_route":true,"route_exclude_address_set":"lan_ip","stack":"gvisor","platform":{"http_proxy":{"enabled":true,"server":"127.0.0.1","server_port":6789}}},
+    {"type":"mixed","tag":"mixed","listen":"127.0.0.1","listen_port":6789,"reuse_addr":true,"set_system_proxy":false}
+  ],
+  "outbounds":[
+    {"type":"direct","tag":"direct","domain_resolver":"system"},
+    {"type":"selector","tag":"ExitGateway","outbounds":["auto"],"default":"auto","interrupt_exist_connections":true},
+    {"type":"urltest","tag":"auto","outbounds":[],"url":"http://www.gstatic.com/generate_204","interval":"10m0s","tolerance":50,"idle_timeout":"30m0s"},
+    {"type":"selector","tag":"AI","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true},
+    {"type":"selector","tag":"TV","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true}
+  ],
+  "route":{
+    "rules":[
+      {"action":"sniff","sniffer":["http","tls","quic","dns"],"timeout":"500ms"},
+      {"type":"logical","mode":"or","rules":[{"port":53},{"protocol":"dns"}],"action":"hijack-dns"},
+      {"rule_set":"reject_non_ip_drop","action":"reject"},
+      {"rule_set":"reject_non_ip_no_drop","action":"reject"},
+      {"rule_set":"reject_domainset","action":"reject"},
+      {"rule_set":"reject_extra_domainset","action":"reject"},
+      {"rule_set":"reject_non_ip","action":"reject"},
+      {"rule_set":"sogouinput","action":"reject"},
+      {"domain":["direct-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"direct"},
+      {"domain":["proxy-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"ExitGateway"},
+      {"rule_set":"speedtest","outbound":"direct"},
+      {"rule_set":"cdn_domainset","outbound":"ExitGateway"},
+      {"rule_set":"cdn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"stream_non_ip","outbound":"TV"},
+      {"rule_set":"ai_non_ip","outbound":"AI"},
+      {"rule_set":"apple_intelligence_non_ip","outbound":"AI"},
+      {"rule_set":"telegram_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"apple_cdn","outbound":"direct"},
+      {"rule_set":"apple_services","outbound":"ExitGateway"},
+      {"rule_set":"apple_cn_non_ip","outbound":"direct"},
+      {"rule_set":"microsoft_cdn_non_ip","outbound":"direct"},
+      {"rule_set":"microsoft_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_non_ip","outbound":"direct"},
+      {"rule_set":"download_domainset","outbound":"ExitGateway"},
+      {"rule_set":"download_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"lan_non_ip","outbound":"direct"},
+      {"rule_set":"domestic_non_ip","outbound":"direct"},
+      {"rule_set":"direct_non_ip","outbound":"direct"},
+      {"rule_set":"global_non_ip","outbound":"ExitGateway"},
+      {"action":"resolve"},
+      {"rule_set":"reject_ip","action":"reject"},
+      {"rule_set":"stream_ip","outbound":"TV"},
+      {"rule_set":"telegram_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_ip","outbound":"direct"},
+      {"rule_set":"lan_ip","outbound":"direct"},
+      {"rule_set":"domestic_ip","outbound":"direct"},
+      {"rule_set":"china_ip","outbound":"direct"}
+    ],
+    "rule_set":[
+      {"type":"remote","tag":"reject_non_ip_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip_no_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-no-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_extra_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject_extra.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"sogouinput","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/sogouinput.srs","download_detour":"auto"},
+      {"type":"remote","tag":"speedtest","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/speedtest.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"ai_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/ai.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_intelligence_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_intelligence.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cdn","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/apple_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_services","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_services.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_cn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"direct_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/direct.srs","download_detour":"auto"},
+      {"type":"remote","tag":"global_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/global.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"china_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/china_ip.srs","download_detour":"auto"}
+    ],
+    "final":"ExitGateway",
+    "auto_detect_interface":true,
+    "default_domain_resolver":"system"
+  },
+  "experimental":{
+    "cache_file":{},
+    "clash_api":{}
+  }
 }
 
 const TunGlobalConfig = {
-    "log": {
-        "disabled": false,
-        "level": "debug",
-        "timestamp": false
-    },
-    "dns": {
-        "servers": [
-            {
-                "tag": "system", // 🚫 禁止修改 tag 名称
-                "type": "udp",
-                "server": "119.29.29.29",
-                "server_port": 53,
-                "connect_timeout": "5s"
-            },
-            {
-                "tag": "dns_proxy", // 🚫 禁止修改 tag 名称
-                "type": "tcp",
-                "server": "1.0.0.1",
-                "detour": "ExitGateway",
-                "connect_timeout": "5s"
-            },
-            {
-                "tag": "remote", // 🚫 禁止修改 tag 名称
-                "type": "fakeip",
-                "inet4_range": "198.18.0.0/15",
-                "inet6_range": "fc00::/18"
-            }
-        ],
-        "rules": [
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "server": "system",
-                "strategy": "prefer_ipv4"
-            },
-            {
-                "query_type": [
-                    "HTTPS",
-                    "SVCB",
-                    "PTR"
-                ],
-                "action": "reject"
-            },
-            {
-                "query_type": [
-                    "A",
-                    "AAAA",
-                    "CNAME"
-                ],
-                "server": "remote"
-            }
-        ],
-        "strategy": "prefer_ipv4",
-        "final": "dns_proxy" // 🚫 禁止修改
-    },
-    "inbounds": [
-        {
-            "tag": "tun",
-            "type": "tun",
-            "address": [
-                "172.19.0.1/30",
-                "fdfe:dcba:9876::1/126"
-            ],
-            "platform": {
-                "http_proxy": {
-                    "enabled": true,
-                    "server": "127.0.0.1",
-                    "server_port": 6789
-                }
-            },
-            "mtu": 9000,
-            "stack": "gvisor",
-            "auto_route": true,
-            "strict_route": true,
-            "sniff": true,
-            "sniff_override_destination": true,
-            "route_exclude_address": [
-                "10.0.0.0/8",
-                "100.64.0.0/10",
-                "127.0.0.0/8",
-                "169.254.0.0/16",
-                "172.16.0.0/12",
-                "192.0.0.0/24",
-                "192.168.0.0/16",
-                "224.0.0.0/4",
-                "240.0.0.0/4",
-                "255.255.255.255/32",
-                "fe80::/10",
-                "fc00::/7",
-                "ff01::/16",
-                "ff02::/16",
-                "ff03::/16",
-                "ff04::/16",
-                "ff05::/16"
-            ]
-        },
-        {
-            "tag": "mixed", // 🚫 禁止修改 tag 名称
-            "type": "mixed",
-            "listen": "127.0.0.1",
-            "listen_port": 6789, // 🚫 禁止修改
-            "reuse_addr": true,
-            "tcp_fast_open": true,
-            "set_system_proxy": false
-        }
+  "log":{"level":"debug","timestamp":true},
+  "dns":{
+    "servers":[
+      {"type":"udp","tag":"system","server":"180.184.1.1"},
+      {"type":"https","tag":"dns_proxy","detour":"ExitGateway","server":"1.1.1.1"},
+      {"type":"https","tag":"dns_direct","detour":"direct","server":"223.5.5.5"},
+      {"type":"local","tag":"local"},
+      {"type":"fakeip","tag":"remote","inet4_range":"198.18.0.0/15","inet6_range":"fc00::/18"}
     ],
-    "route": {
-        "rules": [
-            {
-                "inbound": "mixed",
-                "action": "sniff"
-            },
-            {
-                "protocol": "dns",
-                "action": "hijack-dns"
-            },
-            {
-                "protocol": "quic",
-                "action": "reject"
-            },
-            {
-                "domain": [
-                    "captive.oneoh.cloud",
-                    "captive.apple.com",
-                    "nmcheck.gnome.org",
-                    "www.msftconnecttest.com",
-                    "connectivitycheck.gstatic.com"
-                ],
-                "domain_suffix": [
-                    "local",
-                    "lan",
-                    "localdomain",
-                    "localhost",
-                    "bypass.local",
-                    "captive.apple.com"
-                ],
-                "outbound": "direct"
-            }
-        ],
-        "final": "ExitGateway", // 🚫 禁止修改
-        "auto_detect_interface": true,
-        "rule_set": [
-            {
-                "tag": "geoip-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs"
-            },
-            {
-                "type": "remote",
-                "tag": "geosite-geolocation-cn",
-                "format": "source",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.json"
-            },
-            {
-                "tag": "geosite-linkedin",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-linkedin.srs"
-            },
-            {
-                "tag": "geosite-linkedin-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-linkedin@cn.srs"
-            },
-            {
-                "type": "remote",
-                "tag": "geosite-geolocation-!cn",
-                "format": "source",
-                "url": "https://jsdelivr.oneoh.cloud/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.json"
-            },
-            {
-                "tag": "geosite-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/OneOhCloud/one-geosite@rules/geosite-one-cn.srs"
-            },
-            {
-                "tag": "geosite-apple",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-apple.srs"
-            },
-            {
-                "tag": "geosite-microsoft-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-microsoft@cn.srs"
-            },
-            {
-                "tag": "geosite-samsung",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-samsung.srs"
-            },
-            {
-                "tag": "geosite-telegram",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-telegram.srs"
-            },
-            {
-                "tag": "geosite-private",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://jsdelivr.oneoh.cloud/gh/SagerNet/sing-geosite@rule-set/geosite-private.srs"
-            }
-        ]
-    },
-    "experimental": {
-        "clash_api": {}, // 此字段将被忽略
-        "cache_file": {} // 此字段将被忽略
-    },
-    // ------------------ Outbounds ------------------
-    // OneBox 会自动追加远程配置或者本地配置内容中的服务节点
-    // 到 outbounds 以及 ExitGateway["outbounds"] 和 auto["outbounds"] 中
-    // 如果需要添加自定义的出站，可以在此处添加，但请不要有重复的 tag 名称以及修改以下三个出站的 tag 名称
-    // 记住一个修改原则：只追加，不修改，不删除，不重复
-    "outbounds": [
-        {
-            "tag": "direct",
-            "type": "direct",
-            "domain_resolver": "system"
-        },
-        {
-            "tag": "ExitGateway",
-            "type": "selector",
-            "outbounds": [
-                "auto"
-            ],
-            "interrupt_exist_connections": true
-        },
-        {
-            "tag": "auto",
-            "type": "urltest",
-            "url": "https://www.google.com/generate_204",
-            "outbounds": []
-        }
-    ]
+    "rules":[
+      {"query_type":["HTTPS","SVCB","PTR"],"action":"reject"},
+      {"rule_set":"lan_non_ip","server":"local"},
+      {"query_type":["A","AAAA"],"server":"remote","rewrite_ttl":1},
+      {"rule_set":["reject_non_ip_drop","reject_non_ip_no_drop","reject_domainset","reject_extra_domainset","reject_non_ip","sogouinput"],"action":"reject"},
+      {"rule_set":["cdn_domainset","cdn_non_ip","ai_non_ip","apple_intelligence_non_ip","telegram_non_ip","apple_services","microsoft_non_ip","download_domainset","download_non_ip","global_non_ip"],"server":"dns_proxy"},
+      {"rule_set":["apple_cdn","apple_cn_non_ip","microsoft_cdn_non_ip","domestic_non_ip","direct_non_ip"],"server":"dns_proxy"}
+    ],
+    "final":"dns_proxy",
+    "independent_cache":true
+  },
+  "inbounds":[
+    {"type":"tun","tag":"tun","address":["172.19.0.1/30","fdfe:dcba:9876::1/126"],"auto_route":true,"strict_route":true,"route_exclude_address_set":"lan_ip","stack":"gvisor","platform":{"http_proxy":{"enabled":true,"server":"127.0.0.1","server_port":6789}}},
+    {"type":"mixed","tag":"mixed","listen":"127.0.0.1","listen_port":6789,"reuse_addr":true,"set_system_proxy":false}
+  ],
+  "outbounds":[
+    {"type":"direct","tag":"direct","domain_resolver":"system"},
+    {"type":"selector","tag":"ExitGateway","outbounds":["auto"],"default":"auto","interrupt_exist_connections":true},
+    {"type":"urltest","tag":"auto","outbounds":[],"url":"http://www.gstatic.com/generate_204","interval":"10m0s","tolerance":50,"idle_timeout":"30m0s"},
+    {"type":"selector","tag":"AI","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true},
+    {"type":"selector","tag":"TV","outbounds":["ExitGateway"],"default":"ExitGateway","interrupt_exist_connections":true}
+  ],
+  "route":{
+    "rules":[
+      {"action":"sniff","sniffer":["http","tls","quic","dns"],"timeout":"500ms"},
+      {"type":"logical","mode":"or","rules":[{"port":53},{"protocol":"dns"}],"action":"hijack-dns"},
+      {"rule_set":"reject_non_ip_drop","action":"reject"},
+      {"rule_set":"reject_non_ip_no_drop","action":"reject"},
+      {"rule_set":"reject_domainset","action":"reject"},
+      {"rule_set":"reject_extra_domainset","action":"reject"},
+      {"rule_set":"reject_non_ip","action":"reject"},
+      {"rule_set":"sogouinput","action":"reject"},
+      {"domain":["direct-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"ExitGateway"},
+      {"domain":["proxy-tag.oneoh.cloud"],"domain_suffix":[],"ip_cidr":[],"outbound":"ExitGateway"},
+      {"rule_set":"speedtest","outbound":"ExitGateway"},
+      {"rule_set":"cdn_domainset","outbound":"ExitGateway"},
+      {"rule_set":"cdn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"stream_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"ai_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"apple_intelligence_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"telegram_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"apple_cdn","outbound":"ExitGateway"},
+      {"rule_set":"apple_services","outbound":"ExitGateway"},
+      {"rule_set":"apple_cn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"microsoft_cdn_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"microsoft_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"download_domainset","outbound":"ExitGateway"},
+      {"rule_set":"download_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"lan_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"domestic_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"direct_non_ip","outbound":"ExitGateway"},
+      {"rule_set":"global_non_ip","outbound":"ExitGateway"},
+      {"action":"resolve"},
+      {"rule_set":"reject_ip","action":"reject"},
+      {"rule_set":"stream_ip","outbound":"ExitGateway"},
+      {"rule_set":"telegram_ip","outbound":"ExitGateway"},
+      {"rule_set":"neteasemusic_ip","outbound":"ExitGateway"},
+      {"rule_set":"lan_ip","outbound":"direct"},
+      {"rule_set":"domestic_ip","outbound":"ExitGateway"},
+      {"rule_set":"china_ip","outbound":"ExitGateway"}
+    ],
+    "rule_set":[
+      {"type":"remote","tag":"reject_non_ip_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip_no_drop","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject-no-drop.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_extra_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/reject_extra.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"sogouinput","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/sogouinput.srs","download_detour":"auto"},
+      {"type":"remote","tag":"speedtest","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/speedtest.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"ai_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/ai.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_intelligence_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_intelligence.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cdn","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/apple_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_services","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_services.srs","download_detour":"auto"},
+      {"type":"remote","tag":"apple_cn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/apple_cn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_cdn_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft_cdn.srs","download_detour":"auto"},
+      {"type":"remote","tag":"microsoft_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/microsoft.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_domainset","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/domainset/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"download_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/download.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"direct_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/direct.srs","download_detour":"auto"},
+      {"type":"remote","tag":"global_non_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/non_ip/global.srs","download_detour":"auto"},
+      {"type":"remote","tag":"reject_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/reject.srs","download_detour":"auto"},
+      {"type":"remote","tag":"stream_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/stream.srs","download_detour":"auto"},
+      {"type":"remote","tag":"telegram_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/telegram.srs","download_detour":"auto"},
+      {"type":"remote","tag":"neteasemusic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/neteasemusic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"lan_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/lan.srs","download_detour":"auto"},
+      {"type":"remote","tag":"domestic_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/domestic.srs","download_detour":"auto"},
+      {"type":"remote","tag":"china_ip","url":"https://cdn.jsdelivr.net/gh/caocaocc/ruleset@main/sing-box/ip/china_ip.srs","download_detour":"auto"}
+    ],
+    "final":"ExitGateway",
+    "auto_detect_interface":true,
+    "default_domain_resolver":"dns_proxy"
+  },
+  "experimental":{
+    "cache_file":{},
+    "clash_api":{}
+  }
 }
 
 

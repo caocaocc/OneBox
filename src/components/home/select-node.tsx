@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { invoke } from "@tauri-apps/api/core";
 import { fetch } from '@tauri-apps/plugin-http';
@@ -86,6 +86,7 @@ export function SelecItem(props: SelecItemProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [showDelay, setShowDelay] = useState(false);
     const [lastRunning, setLastRunning] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
 
 
     useEffect(() => {
@@ -116,6 +117,24 @@ export function SelecItem(props: SelecItemProps) {
 
 
     }, [isRunning, lastRunning]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (!containerRef.current) {
+                return;
+            }
+            if (!containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isOpen]);
 
 
 
@@ -152,7 +171,7 @@ export function SelecItem(props: SelecItemProps) {
 
 
     return (
-        <div className="relative">
+        <div className="relative" ref={containerRef}>
             <div
                 className={`select select-sm  select-ghost border-[0.8px] border-gray-200  cursor-pointer `}
                 onClick={() => setIsOpen(!isOpen)}
