@@ -105,4 +105,5 @@ jobs:
           releaseName: "v${{ steps.tauri_version.outputs.version }}"
           releaseBody: |
             ${{ steps.decode.outputs.content }}
+          assetNamePattern: "onebox-[version]-[platform]-[arch][setup][ext]"
           args: ${{ matrix.args }}

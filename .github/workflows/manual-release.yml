@@ -118,5 +118,6 @@ jobs:
           releaseName: "Manual"
           releaseBody: |
             ${{ steps.decode.outputs.content }}
+          assetNamePattern: "onebox-[version]-[platform]-[arch][setup][ext]"
           args: ${{ matrix.args }}
           prerelease: true
