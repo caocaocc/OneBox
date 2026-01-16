@@ -18,12 +18,16 @@ jobs:
         include:
           - platform: "macos-latest"
             args: "--target aarch64-apple-darwin"
+            arch_label: "arm64"
           - platform: "macos-latest"
             args: "--target x86_64-apple-darwin"
+            arch_label: "amd64"
           - platform: "ubuntu-24.04"
             args: ""
+            arch_label: "amd64"
           - platform: "windows-latest"
             args: ""
+            arch_label: "amd64"
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -105,5 +109,5 @@ jobs:
           releaseName: "v${{ steps.tauri_version.outputs.version }}"
           releaseBody: |
             ${{ steps.decode.outputs.content }}
-          assetNamePattern: "onebox-[version]-[platform]-[arch][setup][ext]"
+          assetNamePattern: "onebox-[version]-[platform]-${{ matrix.arch_label }}[setup][ext]"
           args: ${{ matrix.args }}
