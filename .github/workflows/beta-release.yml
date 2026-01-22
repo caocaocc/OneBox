@@ -35,12 +35,16 @@ jobs:
         include:
           - platform: "macos-latest"
             args: "--target aarch64-apple-darwin"
+            arch_label: "arm64"
           - platform: "macos-latest"
             args: "--target x86_64-apple-darwin"
+            arch_label: "amd64"
           - platform: "ubuntu-24.04"
             args: ""
+            arch_label: "amd64"
           - platform: "windows-latest"
             args: ""
+            arch_label: "amd64"
 
 
     runs-on: ${{ matrix.platform }}
@@ -112,35 +116,17 @@ jobs:
       - name: Download Binaries
         run: bun run scripts/download-binaries.ts
 
-      - name: Initialize Apple Signing Key
-        if: matrix.platform == 'macos-latest'
-        run: |
-          echo "${{ secrets.APPLE_AUTH_KEY }}" > $GITHUB_WORKSPACE/temp_auth_key.p8
-        shell: bash
-
       - name: Build and Release with Tauri Action
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-          # 作者签名
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # 苹果签名
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          # 苹果公证
-          APPLE_API_KEY_PATH: ${{ github.workspace }}/temp_auth_key.p8
-          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
-          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: "beta"
           releaseName: "Beta"
           releaseBody: |
             ${{ steps.decode.outputs.content }}
+          assetNamePattern: "onebox-[version]-[platform]-${{ matrix.arch_label }}[setup][ext]"
           args: ${{ matrix.args }}
           prerelease: true
-
-      - name: Clean Up Apple Signing Key
-        if: matrix.platform == 'macos-latest'
-        run: rm -f temp_auth_key.p8
-        shell: bash

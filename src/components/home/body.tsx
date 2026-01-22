@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Shield } from "react-bootstrap-icons";
+import bytes from "bytes";
 import { useSubscriptions } from "../../hooks/useDB";
 import { Subscription } from "../../types/definition";
 import { t, vpnServiceManager } from "../../utils/helper";
@@ -11,6 +11,8 @@ const formatDate = (prefix: string, date: number) => {
     if (date === 32503680000000) {
         // 是本地文件
         return t("local_file_no_expire")
+    } else if (date === 0) {
+        return t("never_expires")
     } else {
         return `${prefix} ${new Date(date).toLocaleDateString('zh-CN')}`
     }
@@ -20,7 +22,10 @@ const formatDate = (prefix: string, date: number) => {
 export default function Body({ isRunning, onUpdate }: { isRunning: boolean, onUpdate: () => void }) {
     const [sub, setSub] = useState<Subscription>();
     const { data, isLoading } = useSubscriptions();
-
+    const isLocalFile = sub?.expire_time === 32503680000000
+    const trafficDetails = sub && !isLocalFile
+        ? `${bytes(sub.used_traffic)} / ${bytes(sub.total_traffic)}`
+        : ""
 
     const handleUpdate = async (identifier: string, isUpdate: boolean) => {
         try {
@@ -64,10 +69,9 @@ export default function Body({ isRunning, onUpdate }: { isRunning: boolean, onUp
             <div>
                 {sub && (
                     <div className="w-full  ">
-                        <div className="flex items-center justify-center">
-                            <Shield size={14} className="text-gray-400 mr-1" />
-                            <span className="text-xs text-gray-400 capitalize">
-                                {t("current_subscription")}
+                        <div className="flex items-center justify-center mt-1">
+                            <span className="text-xs text-blue-500 ">
+                                {trafficDetails || '\u00A0'}
                             </span>
                         </div>
 

@@ -51,6 +51,27 @@ pub async fn version(app: tauri::AppHandle) -> Result<String, String> {
     String::from_utf8(output.stdout).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+pub async fn format_config(app: tauri::AppHandle, file_name: String) -> Result<(), String> {
+    let config_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    let config_path = config_dir.join(file_name);
+    let config_path = config_path.to_string_lossy().to_string();
+    let output = app
+        .shell()
+        .sidecar("sing-box")
+        .map_err(|e| e.to_string())?
+        .args(["format", "-c", &config_path, "-w"])
+        .output()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).to_string())
+    }
+}
+
 async fn get_password_for_mode(mode: &ProxyMode) -> Result<String, String> {
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     {

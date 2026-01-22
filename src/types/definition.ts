@@ -5,8 +5,8 @@ export const SING_BOX_MAJOR_VERSION = "1.12";
 export const SING_BOX_MINOR_VERSION = "17";
 export const SING_BOX_VERSION = `v${SING_BOX_MAJOR_VERSION}.${SING_BOX_MINOR_VERSION}`;
 
-export const GITHUB_URL = 'https://github.com/OneOhCloud/OneBox'
-export const OFFICIAL_WEBSITE = 'https://sing-box.net'
+export const GITHUB_URL = 'https://github.com'
+export const OFFICIAL_WEBSITE = 'https://www.hidder.org'
 export const SSI_STORE_KEY = 'selected_subscription_identifier'
 export const DEVELOPER_TOGGLE_STORE_KEY = 'developer_toggle_key'
 export const STAGE_VERSION_STORE_KEY = 'stage_version_key'

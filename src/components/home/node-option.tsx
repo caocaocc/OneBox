@@ -12,7 +12,7 @@ const API_CONFIG = {
     TIMEOUT_DELAY: 2000
 } as const;
 
-const DelayTestUrl = "https://www.google.com/generate_204"
+const DelayTestUrl = "http://connectivitycheck.gstatic.com/generate_204"
 
 // 类型定义
 type DelayStatus = '-' | number;
@@ -93,14 +93,14 @@ interface DelayIndicatorProps {
 }
 
 const DelayIndicator = ({ delay, showDelay, delayText }: DelayIndicatorProps) => {
-    const displayText = delay === '-' ? delayText : `${delay}ms`;
+    const displayText = delay === '-' ? delayText : `${Math.round(delay / 3)}ms`;
 
     if (!showDelay) {
         return <span className={STYLES.loading} />;
     }
 
     return (
-        <div className="ml-2 text-sm font-medium transition-all duration-300 ease">
+        <div className={`ml-2 text-sm font-medium transition-all duration-300 ease ${delay === '-' ? '' : 'text-green-600'}`}>
             {displayText}
         </div>
     );

@@ -167,6 +167,7 @@ pub fn run() {
             core::stop,
             core::start,
             core::version,
+            core::format_config,
             core::is_running,
             core::reload_config,
             app_status::read_logs,

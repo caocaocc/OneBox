@@ -36,7 +36,7 @@ async function fetchConfigContent(url: string): Promise<ConfigResponse> {
                 data: JSON.parse(content),
                 headers: {
                     'subscription-userinfo': `upload=0; download=0; total=1125899906842624; expire=32503680000`,
-                    'official-website': 'https://sing-box.net',
+                    'official-website': 'https://www.hidder.org',
                     'content-disposition': `attachment; filename=local-config-${Date.now()}.json`
                 },
                 status: 200
@@ -59,7 +59,7 @@ async function fetchConfigContent(url: string): Promise<ConfigResponse> {
                 data: null,
                 headers: {
                     'subscription-userinfo': '',
-                    'official-website': 'https://sing-box.net',
+                    'official-website': 'https://www.hidder.org',
                     'content-disposition': ''
                 },
                 status: response.status
@@ -70,7 +70,7 @@ async function fetchConfigContent(url: string): Promise<ConfigResponse> {
             data: await response.json(),
             headers: {
                 'subscription-userinfo': response.headers.get('subscription-userinfo') || '',
-                'official-website': response.headers.get('official-website') || 'https://sing-box.net',
+                'official-website': response.headers.get('official-website') || 'https://www.hidder.org',
                 'content-disposition': response.headers.get('content-disposition') || ''
             },
             status: response.status
@@ -102,7 +102,7 @@ function getRemoteInfoBySubscriptionUserinfo(subscriptionUserinfo: string) {
             upload: info.upload || '1',
             download: info.download || '1',
             total: info.total || '1',
-            expire: info.expire || '1',
+            expire: info.expire || '0',
         };
     } catch (error) {
         console.error('Error parsing subscription userinfo:', error);
@@ -110,7 +110,7 @@ function getRemoteInfoBySubscriptionUserinfo(subscriptionUserinfo: string) {
             upload: '1',
             download: '1',
             total: '1',
-            expire: '1',
+            expire: '0',
         };
     }
 }
@@ -127,7 +127,7 @@ export async function updateSubscription(identifier: string) {
         const response = await fetchConfigContent(url);
 
         const { upload, download, total, expire } = getRemoteInfoBySubscriptionUserinfo(response.headers['subscription-userinfo'] || '')
-        const officialWebsite = response.headers['official-website'] || 'https://sing-box.net'
+        const officialWebsite = response.headers['official-website'] || 'https://www.hidder.org'
         const used_traffic = parseInt(upload) + parseInt(download)
         const total_traffic = parseInt(total)
         const expire_time = parseInt(expire) * 1000
@@ -166,7 +166,7 @@ export async function addSubscription(url: string, name: string | undefined) {
     try {
         const response = await fetchConfigContent(url);
 
-        const officialWebsite = response.headers['official-website'] || 'https://sing-box.net'
+        const officialWebsite = response.headers['official-website'] || 'https://www.hidder.org'
 
         if (name === undefined || name === '' || name === "默认配置") {
             name = getRemoteNameByContentDisposition(response.headers['content-disposition'] || '') || '订阅'
