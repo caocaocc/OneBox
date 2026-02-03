@@ -43,9 +43,10 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
     trafficDetails,
     onUpdate,
     onDelete,
-    loading
+    loading,
     isLocalFile
 }) => {
+    const isUpdating = loading
 
     const handleUpdateClick = async () => {
         try {
@@ -181,10 +182,9 @@ export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
 }) => {
 
     const isLocalFile = item.expire_time === 32503680000000
-    const usage = Math.floor((item.used_traffic / item.total_traffic) * 100)
-    const remainingDays = Math.floor((item.expire_time - item.last_update_time) / (1000 * 60 * 60 * 24))
-    const trafficDetailsText = `${bytes(item.used_traffic)} /${bytes(item.total_traffic)}`
-    const remainingDaysText = `${remainingDays} ${t("days")}`
+    const usage = item.total_traffic > 0
+        ? Math.floor((item.used_traffic / item.total_traffic) * 100)
+        : 0
     const remainingDays = Math.ceil((item.expire_time - Date.now()) / (1000 * 60 * 60 * 24))
     const trafficDetailsText = isLocalFile
         ? t("expire_unknown")
