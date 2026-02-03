@@ -25,6 +25,7 @@ interface ItemDetailsProps {
     onUpdate: () => Promise<void>
     onDelete: () => Promise<void>
     loading: boolean
+    isLocalFile: boolean
 }
 
 const ANIMATION_STYLES = {
@@ -43,6 +44,7 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
     onUpdate,
     onDelete,
     loading
+    isLocalFile
 }) => {
 
     const handleUpdateClick = async () => {
@@ -78,17 +80,19 @@ const ItemDetails: React.FC<ItemDetailsProps> = ({
                                     <span className="text-xs text-gray-400 capitalize">{t("remaining_traffic")}</span>
                                     <span className="text-xs text-blue-500">{trafficDetails}</span>
                                 </div>
-                                <button
-                                    className="btn btn-xs btn-ghost btn-circle border-0"
-                                    onClick={handleUpdateClick}
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <span className="text-gray-400 size-[0.8rem] loading loading-spinner" />
-                                    ) : (
-                                        <ArrowClockwise className="size-[0.8rem] text-gray-400" />
-                                    )}
-                                </button>
+                                {!isLocalFile && (
+                                    <button
+                                        className="btn btn-xs btn-ghost btn-circle border-0"
+                                        onClick={handleUpdateClick}
+                                        disabled={isUpdating}
+                                    >
+                                        {isUpdating ? (
+                                            <span className="text-gray-400 size-[0.8rem] loading loading-spinner" />
+                                        ) : (
+                                            <ArrowClockwise className="size-[0.8rem] text-gray-400" />
+                                        )}
+                                    </button>
+                                )}
                             </div>
 
                             <div className="flex items-center justify-between">
@@ -176,10 +180,21 @@ export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
     setExpanded
 }) => {
 
+    const isLocalFile = item.expire_time === 32503680000000
     const usage = Math.floor((item.used_traffic / item.total_traffic) * 100)
     const remainingDays = Math.floor((item.expire_time - item.last_update_time) / (1000 * 60 * 60 * 24))
     const trafficDetailsText = `${bytes(item.used_traffic)} /${bytes(item.total_traffic)}`
     const remainingDaysText = `${remainingDays} ${t("days")}`
+    const remainingDays = Math.ceil((item.expire_time - Date.now()) / (1000 * 60 * 60 * 24))
+    const trafficDetailsText = isLocalFile
+        ? t("expire_unknown")
+        : `${bytes(item.used_traffic)} / ${bytes(item.total_traffic)}`
+    const remainingDaysText = isLocalFile
+        ? t("expire_unknown")
+        : item.expire_time === 0
+            ? t("never_expires")
+            : `${Math.max(0, remainingDays)} ${t("days")}`
+
     const handleToggleExpand = () => setExpanded(expanded === item.identifier ? '' : item.identifier)
     const handleWebsiteClick = () => openUrl(item.official_website)
     const { update, resetMessage, loading, message, messageType } = useUpdateSubscription()
@@ -252,12 +267,13 @@ export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
     }
 
 
+    const avatarVariant = isLocalFile ? "file" : "link"
 
     return (
         <li key={item.identifier}>
             <div className="list-row items-center">
                 <div onClick={handleWebsiteClick}>
-                    <Avatar url={item.official_website} danger={usage >= 100} />
+                    <Avatar url={item.official_website} danger={usage >= 100} variant={avatarVariant} />
                 </div>
                 <div className="max-w-40 flex flex-col gap-2">
                     <Title />
@@ -289,6 +305,7 @@ export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
                 visible={expanded === item.identifier}
                 remainingDays={remainingDaysText}
                 trafficDetails={trafficDetailsText}
+                isLocalFile={isLocalFile}
             />
         </li>
     )

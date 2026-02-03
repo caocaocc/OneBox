@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 import { getDirectDNS, getUseDHCP } from "../../single/store";
 import { writeConfigFile } from "../helper";
 
@@ -74,8 +75,7 @@ export async function updateVPNServerConfigFromDB(fileName: string, dbConfigData
 
 
     await writeConfigFile(fileName, new TextEncoder().encode(JSON.stringify(newConfig)));
+    await invoke("format_config", { fileName });
 
 
 }
-
-

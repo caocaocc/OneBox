@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import { SING_BOX_VERSION } from '../src/types/definition';
 
 const BINARY_NAME = 'sing-box';
-const GITHUB_RELEASE_URL = 'https://github.com/SagerNet/sing-box/releases/download/';
+const GITHUB_RELEASE_URL = 'https://github.com/caocaocc/sing-box/releases/download/';
 
 // sysproxy download URL, only supports Windows x64 version.
 const SYSPROXY_URL = "https://github.com/clash-verge-rev/sysproxy/releases/download/x64/sysproxy.exe";
@@ -239,11 +239,11 @@ async function downloadDatabaseFiles(): Promise<void> {
     const dbFiles = [
         {
             name: 'mixed-cache-rule-v1.db',
-            url: 'https://github.com/OneOhCloud/conf-template/raw/refs/heads/stable/database/1.12/zh-cn/mixed-cache-rule-v1.db'
+            url: 'https://github.com/caocaocc/conf-template/raw/refs/heads/stable/database/1.12/zh-cn/mixed-cache-rule-v1.db'
         },
         {
             name: 'tun-cache-rule-v1.db',
-            url: 'https://github.com/OneOhCloud/conf-template/raw/refs/heads/stable/database/1.12/zh-cn/tun-cache-rule-v1.db'
+            url: 'https://github.com/caocaocc/conf-template/raw/refs/heads/stable/database/1.12/zh-cn/tun-cache-rule-v1.db'
         }
     ];
 

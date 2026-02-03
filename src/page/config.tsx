@@ -31,7 +31,7 @@ function ConfigurationNav({ onUpdateAllSubscriptions }: { onUpdateAllSubscriptio
 
         const setupListener = async () => {
             const unListen = await listen('tauri://drag-drop', async event => {
-                const flag = await getStoreValue(SUPPORT_LOCAL_FILE_STORE_KEY, false)
+                const flag = await getStoreValue(SUPPORT_LOCAL_FILE_STORE_KEY, true)
                 if (!flag) {
                     console.log('Local file import is disabled');
                     return
