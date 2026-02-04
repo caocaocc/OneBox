@@ -225,7 +225,7 @@ export async function setConfigTemplateURL(mode: configType, url: string) {
 }
 
 export async function getDefaultConfigTemplateURL(mode: configType): Promise<string> {
-    const remoteUrl = "https://onebox-updater.oneoh.cloud/conf-template";
+    const remoteUrl = "https://cdn.jsdelivr.net/gh/caocaocc/conf-template";
     let stageVersion: StageVersionType = await getStoreValue(STAGE_VERSION_STORE_KEY)
 
     let versionNumber = SING_BOX_VERSION.replace('v', '').split('.')
@@ -235,15 +235,13 @@ export async function getDefaultConfigTemplateURL(mode: configType): Promise<str
 
     switch (mode) {
         case 'mixed':
-            return `${remoteUrl}/raw/refs/heads/${stageVersion}/conf/${ver}/zh-cn/mixed-rules.jsonc`;
+            return `${remoteUrl}@${stageVersion}/conf/${ver}/zh-cn/mixed-rules.jsonc`;
         case 'tun':
-            return `${remoteUrl}/raw/refs/heads/${stageVersion}/conf/${ver}/zh-cn/tun-rules.jsonc`;
+            return `${remoteUrl}@${stageVersion}/conf/${ver}/zh-cn/tun-rules.jsonc`;
         case 'mixed-global':
-            return `${remoteUrl}/raw/refs/heads/${stageVersion}/conf/${ver}/zh-cn/mixed-global.jsonc`;
+            return `${remoteUrl}@${stageVersion}/conf/${ver}/zh-cn/mixed-global.jsonc`;
         case 'tun-global':
-            return `${remoteUrl}/raw/refs/heads/${stageVersion}/conf/${ver}/zh-cn/tun-global.jsonc`;
-        default:
-            return '';
+            return `${remoteUrl}@${stageVersion}/conf/${ver}/zh-cn/tun-global.jsonc`;
     }
 }
 

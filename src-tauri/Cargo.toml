@@ -2,7 +2,7 @@
 name = "one-box"
 version = "1.0.0"
 description = "OneBox is a cross-platform GUI client based on the sing-box kernel."
-authors = ["OneOh Cloud LLC"]
+authors = ["Hidder Inc"]
 edition = "2021"
 
 [profile.dev]
