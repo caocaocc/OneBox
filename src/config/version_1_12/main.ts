@@ -34,6 +34,9 @@ async function updateExperimentalConfig(newConfig: any, dbCacheFilePath: string)
         "path": dbCacheFilePath
     };
 
+    newConfig["experimental"]["unified_delay"] = {
+        "enabled": true
+    };
 }
 
 export async function setMixedConfig(identifier: string) {

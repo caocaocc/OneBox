@@ -28,6 +28,7 @@ pub fn run() {
             lan::get_optimal_local_dns_server,
             core::stop,
             core::start,
+            core::format_config,
             core::is_running,
             core::reload_config,
             command::version,

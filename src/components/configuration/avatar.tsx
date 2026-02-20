@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { ExclamationCircleFill, GlobeAsiaAustralia } from "react-bootstrap-icons";
+import { ExclamationCircleFill, FileEarmark, Link45deg } from "react-bootstrap-icons";
 
 type AvatarProps = {
     url: string
     danger: boolean
+    variant?: "file" | "link"
 }
 
 
@@ -42,10 +43,10 @@ const containerVariants = {
 };
 
 export default function Avatar(props: AvatarProps) {
-    const { url, danger } = props;
+    const { url, danger, variant = "link" } = props;
     const [isHover, setIsHover] = useState(false);
 
-    const isHttpsUrl = url && url.startsWith('https');
+    const isHttpsUrl = variant === "link" && url && url.startsWith('https');
     const avatarUrl = `${url}/favicon.ico`;
     const showUrlIcon = isHover && isHttpsUrl && !danger;
 
@@ -101,8 +102,10 @@ export default function Avatar(props: AvatarProps) {
                     >
                         {danger ? (
                             <ExclamationCircleFill className="text-red-500" size={22} />
+                        ) : variant === "file" ? (
+                            <FileEarmark className="text-gray-400" size={20} />
                         ) : (
-                            <GlobeAsiaAustralia className="text-gray-400" size={20} />
+                            <Link45deg className="text-gray-400" size={20} />
                         )}
                     </motion.div>
                 </div>
